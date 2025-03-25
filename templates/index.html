@@ -16,7 +16,7 @@
             </div>
             <div class="content-container">
                 <strong>Generated Caption:</strong><br>
-                <span id="generated-caption">{{ caption }}</span>  <!-- Added ID here -->
+                <span id="generated-caption">{{ caption }}</span>
                 <br>
                 {% if audio_url %}
                     <button class="sound-button" onclick="playAudio('{{ audio_url }}')">🔊</button>
@@ -45,9 +45,13 @@
                     </select>
                 </div>
                 <br>
-                <button class="translate-btn">Translate</button>  <!-- Removed onclick, added event listener in JS -->
+                <button class="translate-btn">Translate</button>
                 <br>
-                <div id="translated-caption" class="translated-caption"></div>
+                <!-- 🔹 Translated Caption and Sound Button (Initially Hidden) -->
+                <div id="translated-caption-container">
+                    <div id="translated-caption" class="translated-caption"></div>
+                    <button class="sound-button" id="translated-sound-button" onclick="playTranslatedAudio()">🔊</button>
+                </div>
             </div>
         </div>
     {% else %}
@@ -71,11 +75,18 @@
             new Audio(audioUrl).play();
         }
 
+        function playTranslatedAudio() {
+            if (window.translatedAudioURL) {
+                new Audio(window.translatedAudioURL).play();
+            }
+        }
+
         function updateFileName() {
             const fileInput = document.getElementById("file-upload");
             const fileLabel = document.getElementById("file-label");
+
             if (fileInput.files.length > 0) {
-                fileLabel.innerText = fileInput.files[0].name;
+                fileLabel.innerText = fileInput.files[0].name; // 🔹 Replace label text with filename
             } else {
                 fileLabel.innerText = "Choose an image";
             }
@@ -84,35 +95,45 @@
         function translateCaption() {
             const language = document.getElementById("language").value;
             const captionElement = document.getElementById("generated-caption");
-        
+
             if (!captionElement) {
                 console.error("Error: Caption element not found!");
                 return;
             }
-        
+
             const caption = captionElement.innerText.trim();
-            console.log("Sending request:", { text: caption, lang: language });
-        
+
             fetch("/translate", {
                 method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ text: caption, lang: language })
             })
             .then(response => response.json())
             .then(data => {
-                console.log("Translation response:", data);
                 if (data.translated_text) {
                     document.getElementById("translated-caption").innerText = `Translated Caption: ${data.translated_text}`;
-                    document.getElementById("translated-caption").style.display = "block";
-                } else {
-                    console.error("Translation API failed:", data);
+
+                    // 🔹 Show translated caption and sound button together
+                    document.getElementById("translated-caption-container").style.display = "block";
+
+                    // 🔹 Fetch and generate audio for translated text
+                    fetch("/generate_audio", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ text: data.translated_text, lang: language })
+                    })
+                    .then(response => response.json())
+                    .then(audioData => {
+                        if (audioData.audio_url) {
+                            window.translatedAudioURL = audioData.audio_url;
+                            document.getElementById("translated-sound-button").style.display = "inline-block";
+                        }
+                    })
+                    .catch(error => console.error("Audio generation failed:", error));
                 }
             })
             .catch(error => console.error("Fetch error:", error));
         }
-        
     </script>
 </body>
 </html>
