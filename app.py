@@ -12,7 +12,7 @@ from functools import cache
 from flask_compress import Compress
 
 app = Flask(__name__)
-Compress(app)  # Enable Gzip compression
+Compress(app)  
 
 # Directories
 UPLOAD_FOLDER = "static/uploads"
