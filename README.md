@@ -3,9 +3,9 @@
 **Caption Echo** is an image caption generator that takes an image and generates a human-like sentence describing it. It combines deep learning models from computer vision and natural language processing to understand and narrate visual content.
 
 ✨ In addition to generating captions, **Caption Echo** also supports:
-- 🔊 **Sound feature** – The generated caption can be spoken aloud using text-to-speech.
-- 🌍 **Translation** – Captions can be translated into any language.
-- 🗣️ **Multi-language speech** – After translation, the system can also read the translated caption aloud.
+-  **Sound feature** – The generated caption can be spoken aloud using text-to-speech.
+-  **Translation** – Captions can be translated into any language.
+-  **Multi-language speech** – After translation, the system can also read the translated caption aloud.
 
 This makes Caption Echo a great tool for accessibility, language learning, and creative applications.
 
