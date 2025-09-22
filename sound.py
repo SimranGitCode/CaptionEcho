@@ -5,8 +5,7 @@ import os
 
 language = 'en'
 
-def save_audio(caption, lang='en'):
-    """Save caption to an MP3 file and return the path (relative to static/)."""
+def save_audio(caption, lang='en'): 
     os.makedirs("static/audio", exist_ok=True)
     filename = datetime.now().strftime("%Y%m%d-%H%M%S_%f") + ".mp3"
     audio_path = os.path.join("static", "audio", filename)
